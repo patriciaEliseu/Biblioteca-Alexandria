@@ -1,6 +1,13 @@
 package com.example.alexandria.entity;
 
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "publishers")
 public class Publisher {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
