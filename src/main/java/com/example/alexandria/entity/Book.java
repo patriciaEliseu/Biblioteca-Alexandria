@@ -13,6 +13,9 @@ public class Book {
     private String title;
     private String genre;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "book")
+    private BookDetails details;
+
     public Book() {
     }
 
@@ -43,6 +46,14 @@ public class Book {
 
     public void setGenre(String genre) {
         this.genre = genre;
+    }
+
+    public BookDetails getDetails() {
+        return details;
+    }
+
+    public void setDetails(BookDetails details) {
+        this.details = details;
     }
 }
 
