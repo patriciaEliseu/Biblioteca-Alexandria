@@ -9,6 +9,7 @@ import com.example.alexandria.entity.Book;
 import com.example.alexandria.service.BookService;
 import com.example.alexandria.service.exception.BookDetailsNotFoundException;
 import com.example.alexandria.service.exception.BookNotFoundException;
+import com.example.alexandria.service.exception.PublisherNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -90,6 +91,21 @@ public class BookController {
             throws BookDetailsNotFoundException, BookNotFoundException {
         return BookDetailsDto.fromEntity(
                 bookService.removeBookDetail(bookId)
+        );
+    }
+
+    @PutMapping("/{bookId}/publisher/{publisherId}")
+    public BookDto setBookPublisher(@PathVariable Long bookId,
+                                    @PathVariable Long publisherId) throws BookNotFoundException, PublisherNotFoundException {
+        return BookDto.fromEntity(
+                bookService.setBookPublisher(bookId, publisherId)
+        );
+    }
+
+    @DeleteMapping("/{bookId}/publisher")
+    public BookDto removeBookPublisher(@PathVariable Long bookId) throws BookNotFoundException {
+        return BookDto.fromEntity(
+                bookService.removeBookPublisher(bookId)
         );
     }
 

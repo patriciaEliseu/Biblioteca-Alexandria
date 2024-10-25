@@ -3,10 +3,12 @@ package com.example.alexandria.service;
 
 import com.example.alexandria.entity.Book;
 import com.example.alexandria.entity.BookDetails;
+import com.example.alexandria.entity.Publisher;
 import com.example.alexandria.repository.BookDetailRepository;
 import com.example.alexandria.repository.BookRepository;
 import com.example.alexandria.service.exception.BookDetailsNotFoundException;
 import com.example.alexandria.service.exception.BookNotFoundException;
+import com.example.alexandria.service.exception.PublisherNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class BookService {
     //    atributo do tipo repository
     private  final BookRepository bookRepository;
     private  final BookDetailRepository bookDetailRepository;
+    private final PublisherService publisherService;
+
+
     /*
     Este atributo vou receber neste constrututor como injecao
     de dependencia. Por isso está marcado com autowired e auto
@@ -24,9 +29,10 @@ public class BookService {
     pra gente.
      */
     @Autowired
-    public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository) {
+    public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository, PublisherService publisherService) {
         this.bookRepository = bookRepository;
         this.bookDetailRepository = bookDetailRepository;
+        this.publisherService = publisherService;
     }
     /*
     Agora posso implementar métodos aqui na service.
@@ -125,6 +131,19 @@ public class BookService {
         return bookDetail;
     }
 
+    public Book setBookPublisher(Long bookId, Long publisherId) throws BookNotFoundException, PublisherNotFoundException {
+        Book book = findByIdBookService(bookId);
+        Publisher publisher = publisherService.findByIdPublisherService(publisherId);
 
+        book.setPublisher(publisher);
+        return bookRepository.save(book);
+    }
 
+    public Book removeBookPublisher(Long bookId) throws BookNotFoundException {
+        Book book = findByIdBookService(bookId);
+
+        book.setPublisher(null);
+
+        return bookRepository.save(book);
+    }
 }

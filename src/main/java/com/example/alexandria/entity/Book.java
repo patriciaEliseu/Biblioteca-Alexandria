@@ -16,6 +16,11 @@ public class Book {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "book")
     private BookDetails details;
 
+    @ManyToOne
+    @JoinColumn(name="publisher_id")
+    private Publisher publisher;
+
+
     public Book() {
     }
 
@@ -54,6 +59,14 @@ public class Book {
 
     public void setDetails(BookDetails details) {
         this.details = details;
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 }
 

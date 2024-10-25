@@ -3,6 +3,8 @@ package com.example.alexandria.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "publishers")
 public class Publisher {
@@ -12,6 +14,9 @@ public class Publisher {
 
     private String name;
     private String address;
+
+    @OneToMany(mappedBy = "publisher")
+    private List<Book> books;
 
     public Publisher() {
     }
