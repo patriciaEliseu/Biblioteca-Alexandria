@@ -2,9 +2,12 @@ package com.example.alexandria.controller;
 
 
 import com.example.alexandria.controller.dto.BookCreationDto;
+import com.example.alexandria.controller.dto.BookDetailsCreationDto;
+import com.example.alexandria.controller.dto.BookDetailsDto;
 import com.example.alexandria.controller.dto.BookDto;
 import com.example.alexandria.entity.Book;
 import com.example.alexandria.service.BookService;
+import com.example.alexandria.service.exception.BookDetailsNotFoundException;
 import com.example.alexandria.service.exception.BookNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +60,37 @@ public class BookController {
         );
     }
 
+    @PostMapping("/{bookId}/details")
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookDetailsDto createBookDetailsController(@PathVariable Long bookId, @RequestBody BookDetailsCreationDto bookDetailsCreationDto) throws  BookNotFoundException {
+        return BookDetailsDto.fromEntity(
+                bookService.createBookDetail(bookId, bookDetailsCreationDto.toEntity())
+        );
+    }
 
+    @GetMapping("/{bookId}/detail")
+    public BookDetailsDto getBookDetail(@PathVariable Long bookId)
+            throws BookNotFoundException, BookDetailsNotFoundException {
+        return BookDetailsDto.fromEntity(
+                bookService.getBookDetail(bookId)
+        );
+    }
+
+    @PutMapping("/{bookId}/detail")
+    public BookDetailsDto updateBookDetail(@PathVariable Long bookId,
+                                          @RequestBody BookDetailsCreationDto bookDetailCreationDto)
+            throws BookDetailsNotFoundException, BookNotFoundException {
+        return BookDetailsDto.fromEntity(
+                bookService.updateBookDetail(bookId, bookDetailCreationDto.toEntity())
+        );
+    }
+
+    @DeleteMapping("/{bookId}/detail")
+    public BookDetailsDto removeBookDetail(@PathVariable Long bookId)
+            throws BookDetailsNotFoundException, BookNotFoundException {
+        return BookDetailsDto.fromEntity(
+                bookService.removeBookDetail(bookId)
+        );
+    }
 
 }

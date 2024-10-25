@@ -2,7 +2,10 @@ package com.example.alexandria.service;
 
 
 import com.example.alexandria.entity.Book;
+import com.example.alexandria.entity.BookDetails;
+import com.example.alexandria.repository.BookDetailRepository;
 import com.example.alexandria.repository.BookRepository;
+import com.example.alexandria.service.exception.BookDetailsNotFoundException;
 import com.example.alexandria.service.exception.BookNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import java.util.List;
 public class BookService {
     //    atributo do tipo repository
     private  final BookRepository bookRepository;
+    private  final BookDetailRepository bookDetailRepository;
     /*
     Este atributo vou receber neste constrututor como injecao
     de dependencia. Por isso está marcado com autowired e auto
@@ -20,8 +24,9 @@ public class BookService {
     pra gente.
      */
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository) {
         this.bookRepository = bookRepository;
+        this.bookDetailRepository = bookDetailRepository;
     }
     /*
     Agora posso implementar métodos aqui na service.
@@ -70,4 +75,56 @@ public class BookService {
         bookRepository.deleteById(id);
         return book;
     }
+
+    public BookDetails createBookDetail(Long bookId, BookDetails bookDetail)
+            throws BookNotFoundException {
+        Book book = findByIdBookService (bookId);
+
+        bookDetail.setBook(book);
+        return bookDetailRepository.save(bookDetail);
+    }
+
+    public BookDetails getBookDetail(Long bookId)
+            throws BookNotFoundException, BookDetailsNotFoundException {
+        Book book = findByIdBookService(bookId);
+
+        BookDetails bookDetailFromDb = book.getDetails();
+
+        if (bookDetailFromDb == null) {
+            throw new BookDetailsNotFoundException();
+        }
+
+        return bookDetailFromDb;
+    }
+    public BookDetails updateBookDetail(Long bookId, BookDetails bookDetail)
+            throws BookNotFoundException, BookDetailsNotFoundException {
+        BookDetails bookDetailFromDb = getBookDetail(bookId);
+
+        bookDetailFromDb.setSummary(bookDetail.getSummary());
+        bookDetailFromDb.setPageCount(bookDetail.getPageCount());
+        bookDetailFromDb.setYear(bookDetail.getYear());
+        bookDetailFromDb.setIsbn(bookDetail.getIsbn());
+
+        return bookDetailRepository.save(bookDetailFromDb);
+    }
+
+    public BookDetails removeBookDetail(Long bookId)
+            throws BookNotFoundException, BookDetailsNotFoundException {
+        Book book = findByIdBookService(bookId);
+        BookDetails bookDetail = book.getDetails();
+
+        if (bookDetail == null) {
+            throw new BookDetailsNotFoundException();
+        }
+
+        book.setDetails(null);
+        bookDetail.setBook(null);
+
+        bookDetailRepository.delete(bookDetail);
+
+        return bookDetail;
+    }
+
+
+
 }
