@@ -1,15 +1,20 @@
 package com.example.alexandria.service;
 
 
+import com.example.alexandria.entity.Author;
 import com.example.alexandria.entity.Book;
 import com.example.alexandria.entity.BookDetails;
 import com.example.alexandria.entity.Publisher;
 import com.example.alexandria.repository.BookDetailRepository;
 import com.example.alexandria.repository.BookRepository;
+import com.example.alexandria.service.exception.AuthorNotFoundException;
 import com.example.alexandria.service.exception.BookDetailsNotFoundException;
 import com.example.alexandria.service.exception.BookNotFoundException;
 import com.example.alexandria.service.exception.PublisherNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +22,11 @@ import java.util.List;
 @Service
 public class BookService {
     //    atributo do tipo repository
-    private  final BookRepository bookRepository;
-    private  final BookDetailRepository bookDetailRepository;
+    private final BookRepository bookRepository;
+    private final BookDetailRepository bookDetailRepository;
     private final PublisherService publisherService;
+    private final AuthorService authorService;
+
 
 
     /*
@@ -29,10 +36,11 @@ public class BookService {
     pra gente.
      */
     @Autowired
-    public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository, PublisherService publisherService) {
+    public BookService(BookRepository bookRepository, BookDetailRepository bookDetailRepository, PublisherService publisherService, AuthorService authorService) {
         this.bookRepository = bookRepository;
         this.bookDetailRepository = bookDetailRepository;
         this.publisherService = publisherService;
+        this.authorService = authorService;
     }
     /*
     Agora posso implementar métodos aqui na service.
@@ -145,5 +153,32 @@ public class BookService {
         book.setPublisher(null);
 
         return bookRepository.save(book);
+    }
+
+    public Book addBookAuthor(Long bookId, Long authorId)
+            throws BookNotFoundException, AuthorNotFoundException {
+        Book book = findByIdBookService (bookId);
+        Author author = authorService.findByIdAuthorService (authorId);
+
+        book.getAuthors().add(author);
+
+        return bookRepository.save(book);
+    }
+
+    public Book removeBookAuthor(Long bookId, Long authorId)
+            throws BookNotFoundException, AuthorNotFoundException {
+        Book book = findByIdBookService(bookId);
+        Author author = authorService.findByIdAuthorService(authorId);
+
+        book.getAuthors().remove(author);
+
+        return bookRepository.save(book);
+    }
+
+    public List<Book> findAll(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Book> page = bookRepository.findAll(pageable);
+
+        return page.toList();
     }
 }

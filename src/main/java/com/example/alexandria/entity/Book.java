@@ -2,6 +2,7 @@ package com.example.alexandria.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 
 
 @Entity
@@ -20,6 +21,13 @@ public class Book {
     @JoinColumn(name="publisher_id")
     private Publisher publisher;
 
+    @ManyToMany
+    @JoinTable(
+            name = "authors_books",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors;
 
     public Book() {
     }
@@ -67,6 +75,14 @@ public class Book {
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
+    }
+
+    public List<Author> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
     }
 }
 
